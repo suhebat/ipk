@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { LogOut, AlertTriangle, Loader2, X } from "lucide-react";
+import { LogOut, Loader2, X } from "lucide-react";
 
 interface LogoutModalProps {
   isOpen: boolean;
@@ -30,8 +30,8 @@ export default function LogoutModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      {/* Backdrop Gelap dengan Blur */}
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+      {/* Backdrop Gelap dengan Blur — di atas sidebar (z-60) */}
       <div
         className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity animate-in fade-in duration-200"
         onClick={!isLoading ? onClose : undefined}
@@ -41,6 +41,7 @@ export default function LogoutModal({
       <div className="relative w-full max-w-sm rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-6 sm:p-7 shadow-2xl z-10 animate-in zoom-in-95 duration-200 text-center">
         {/* Tombol Close silang di pojok kanan atas */}
         <button
+          type="button"
           onClick={onClose}
           disabled={isLoading}
           className="absolute top-4 right-4 p-1.5 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition disabled:opacity-50"
@@ -49,7 +50,7 @@ export default function LogoutModal({
           <X size={18} />
         </button>
 
-        {/* Lingkaran Ikon Peringatan dengan Efek Glow */}
+        {/* Lingkaran Ikon Logout */}
         <div className="mx-auto w-16 h-16 rounded-2xl bg-red-500/10 dark:bg-red-500/20 text-red-600 dark:text-red-400 flex items-center justify-center mb-4 ring-8 ring-red-500/5">
           <LogOut size={28} className="translate-x-0.5" />
         </div>
@@ -59,7 +60,10 @@ export default function LogoutModal({
           Keluar dari Sistem?
         </h3>
         <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed mb-6 px-2">
-          Hai <strong className="text-zinc-700 dark:text-zinc-200">{userName}</strong>, sesi kerja Anda akan diakhiri. Pastikan semua perubahan data telah Anda simpan.
+          Hai{" "}
+          <strong className="text-zinc-700 dark:text-zinc-200">{userName}</strong>
+          , sesi kerja Anda akan diakhiri. Pastikan semua perubahan data telah
+          Anda simpan.
         </p>
 
         {/* Tombol Aksi */}
