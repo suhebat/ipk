@@ -71,7 +71,7 @@ export default async function DataNasionalPage({ searchParams }: PageProps) {
   // 3. Ambil data pengajuan untuk tahun yang sedang dibuka
   const pengajuan = await prisma.data_pengajuan.findFirst({
     where: { jenis: "nasional", tahun: selectedYear },
-    include: { detail_nasional: true },
+    include: { data_pengajuan_nasional: true },
     orderBy: { created_at: "desc" },
   });
 

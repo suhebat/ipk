@@ -18,7 +18,7 @@ export async function POST(req: Request) {
 
   const pengajuan = await prisma.data_pengajuan.findUnique({
     where: { id: idBig },
-    include: { detail_nasional: true },
+    include: { data_pengajuan_nasional: true },
   });
 
   if (!pengajuan) {
@@ -38,12 +38,12 @@ export async function POST(req: Request) {
       });
 
       // 2. SINKRONKAN KE TABEL PUBLIK (Hanya saat publish!)
-      if (pengajuan.jenis === "nasional" && pengajuan.detail_nasional) {
-        const dimensi = pengajuan.detail_nasional.skor_dimensi as Record<string, number>;
+      if (pengajuan.jenis === "nasional" && pengajuan.data_pengajuan_nasional) {
+        const dimensi = pengajuan.data_pengajuan_nasional.skor_dimensi as Record<string, number>;
         await tx.ipk_nasional_tahunan.upsert({
           where: { tahun: pengajuan.tahun },
           update: {
-            skor_ipk: pengajuan.detail_nasional.skor_ipk,
+            skor_ipk: pengajuan.data_pengajuan_nasional.skor_ipk,
             dimensi_1: dimensi.d1,
             dimensi_2: dimensi.d2,
             dimensi_3: dimensi.d3,
@@ -54,7 +54,7 @@ export async function POST(req: Request) {
           },
           create: {
             tahun: pengajuan.tahun,
-            skor_ipk: pengajuan.detail_nasional.skor_ipk,
+            skor_ipk: pengajuan.data_pengajuan_nasional.skor_ipk,
             dimensi_1: dimensi.d1,
             dimensi_2: dimensi.d2,
             dimensi_3: dimensi.d3,
