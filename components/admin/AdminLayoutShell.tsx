@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from "react";
@@ -30,7 +29,6 @@ export default function AdminLayoutShell({
 
   return (
     <div className="flex h-screen w-full overflow-hidden bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100">
-
       {/* 1. SIDEBAR DESKTOP */}
       <div className="hidden md:block w-64 shrink-0 h-full">
         <AdminSidebar
@@ -70,6 +68,7 @@ export default function AdminLayoutShell({
             countSurat={countSurat}
             isImpersonating={admin.isImpersonating}
             realRole={admin.realRole}
+            mobileOpen={mobileOpen}
             onCloseMobile={() => setMobileOpen(false)}
           />
         </div>
