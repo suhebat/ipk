@@ -1,0 +1,589 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model admins {
+  id             Int             @id @default(autoincrement())
+  nama           String?         @db.VarChar(100)
+  username       String          @unique(map: "username") @db.VarChar(50)
+  password       String          @db.VarChar(255)
+  role           admins_role     @default(admin)
+  status         admins_status   @default(aktif)
+  remember_token String          @db.VarChar(255)
+  foto           String          @db.VarChar(255)
+  email          String          @db.VarChar(150)
+  admin_roles    admin_roles[]
+  log_aktivitas  log_aktivitas[]
+}
+
+model dimension_methodologies {
+  id                   Int        @id @default(autoincrement())
+  dimension_id         Int
+  year_start           Int        @db.Year
+  year_end             Int?       @db.Year
+  definisi_operasional String     @db.Text
+  dimensions           dimensions @relation(fields: [dimension_id], references: [id], onDelete: Cascade, map: "fk_dimension_methodologies_dimension")
+
+  @@index([dimension_id], map: "idx_dimension_id")
+}
+
+model dimensions {
+  id                      Int                       @id @default(autoincrement())
+  slug                    String                    @unique(map: "slug") @db.VarChar(50)
+  name                    String                    @db.VarChar(100)
+  dimension_methodologies dimension_methodologies[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model download_survey {
+  id               Int      @id @default(autoincrement()) @db.UnsignedInt
+  nama             String   @db.VarChar(150)
+  email            String   @db.VarChar(150)
+  bidang_pekerjaan String   @db.VarChar(100)
+  tujuan_unduh     String   @db.VarChar(255)
+  jenis_unduh      String   @db.VarChar(20)
+  halaman          String   @db.VarChar(40)
+  tahun            Int?
+  provinsi         String?  @db.VarChar(100)
+  ip_address       String?  @db.VarChar(45)
+  user_agent       String?  @db.VarChar(255)
+  created_at       DateTime @default(now()) @db.Timestamp(0)
+
+  @@index([created_at], map: "idx_created")
+  @@index([halaman], map: "idx_halaman")
+  @@index([jenis_unduh], map: "idx_jenis")
+}
+
+model ipk_nasional_tahunan {
+  tahun     Int      @id @db.Year
+  dimensi_1 Decimal? @db.Decimal(5, 2)
+  dimensi_2 Decimal? @db.Decimal(5, 2)
+  dimensi_3 Decimal? @db.Decimal(5, 2)
+  dimensi_4 Decimal? @db.Decimal(5, 2)
+  dimensi_5 Decimal? @db.Decimal(5, 2)
+  dimensi_6 Decimal? @db.Decimal(5, 2)
+  dimensi_7 Decimal? @db.Decimal(5, 2)
+  skor_ipk  Decimal? @db.Decimal(5, 2)
+}
+
+model log_aktivitas {
+  id         Int      @id @default(autoincrement())
+  admin_id   Int
+  aktivitas  String   @db.VarChar(255)
+  nama_file  String?  @db.VarChar(255)
+  kategori   String?  @default("Upload") @db.VarChar(100)
+  created_at DateTime @default(now()) @db.Timestamp(0)
+  admins     admins   @relation(fields: [admin_id], references: [id], onDelete: Cascade, map: "fk_log_admins")
+
+  @@index([admin_id], map: "fk_log_admins")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model metadata_indikator {
+  id                  Int                                    @id @default(autoincrement()) @db.UnsignedInt
+  kode_indikator      String?                                @db.VarChar(50)
+  tahun               Int                                    @default(2024)
+  dimensi             String                                 @db.VarChar(100)
+  nama_indikator      String                                 @db.VarChar(255)
+  slug                String?                                @unique(map: "slug") @db.VarChar(255)
+  konsep_definisi     String                                 @db.Text
+  interpretasi        String                                 @db.Text
+  contoh_interpretasi String?                                @db.Text
+  rumus_perhitungan   String?                                @db.Text
+  rumus_pembilang     String?                                @db.Text
+  rumus_penyebut      String?                                @db.Text
+  variabel_pembangun  String?                                @db.Text
+  kegiatan_penghasil  String                                 @db.VarChar(255)
+  ukuran_satuan       String?                                @default("Persen") @db.VarChar(50)
+  waktu_ketersediaan  String?                                @default("Tahunan") @db.VarChar(50)
+  level_estimasi      String?                                @default("Nasional, provinsi") @db.VarChar(100)
+  dapat_diakses_umum  metadata_indikator_dapat_diakses_umum? @default(Ya)
+  publikasi_terkait   String?                                @default("Website IPK dan eBook IPK") @db.VarChar(255)
+  urutan              Int?                                   @default(0)
+  is_active           Boolean?                               @default(true)
+  created_at          DateTime                               @default(now()) @db.Timestamp(0)
+  updated_at          DateTime                               @default(now()) @db.Timestamp(0)
+
+  @@index([dimensi], map: "idx_dimensi")
+  @@index([kegiatan_penghasil], map: "idx_kegiatan")
+  @@index([tahun], map: "idx_tahun")
+  @@fulltext([nama_indikator, konsep_definisi, interpretasi], map: "idx_search")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model permohonan_data {
+  id                 BigInt                        @id @default(autoincrement()) @db.UnsignedBigInt
+  nomor_permohonan   String                        @unique(map: "uq_permohonan_nomor") @db.VarChar(50)
+  tanggal_permohonan DateTime                      @db.Date
+  nama_pemohon       String                        @db.VarChar(150)
+  email              String                        @db.VarChar(150)
+  telepon            String                        @db.VarChar(50)
+  instansi           String                        @db.VarChar(200)
+  jabatan            String?                       @db.VarChar(100)
+  jenis_pemohon      permohonan_data_jenis_pemohon
+  jenis_data         String                        @db.VarChar(100)
+  wilayah            permohonan_data_wilayah
+  detail_wilayah     String?                       @db.Text
+  format_data        permohonan_data_format_data
+  tahun_data         String                        @db.VarChar(100)
+  tujuan             String                        @db.VarChar(100)
+  detail_permintaan  String                        @db.Text
+  referensi          String?                       @db.VarChar(255)
+  lampiran           String?                       @db.VarChar(255)
+  status             permohonan_data_status        @default(baru)
+  catatan_admin      String?                       @db.Text
+  diproses_pada      DateTime?                     @db.DateTime(0)
+  selesai_pada       DateTime?                     @db.DateTime(0)
+  created_at         DateTime                      @default(now()) @db.DateTime(0)
+  updated_at         DateTime                      @default(now()) @db.DateTime(0)
+
+  @@index([email], map: "idx_permohonan_email")
+  @@index([status], map: "idx_permohonan_status")
+  @@index([tanggal_permohonan], map: "idx_permohonan_tanggal")
+}
+
+model provinces {
+  id                    Int      @id @default(autoincrement())
+  code                  String   @unique(map: "code") @db.VarChar(10)
+  name                  String   @db.VarChar(100)
+  available_before_2024 Boolean? @default(true)
+}
+
+model publications {
+  id              Int     @id @default(autoincrement())
+  title           String  @db.VarChar(255)
+  year            Int
+  type            String? @db.VarChar(50)
+  description     String? @db.Text
+  image_path      String? @db.VarChar(255)
+  seo_keywords    String? @db.VarChar(255)
+  seo_description String? @db.VarChar(255)
+  download_link   String? @db.VarChar(255)
+}
+
+model ref_indikator_2018 {
+  kode           String   @id @db.VarChar(10)
+  nama_indikator String   @db.Text
+  nilai_minimum  Decimal? @db.Decimal(10, 2)
+  nilai_maximum  Decimal? @db.Decimal(10, 2)
+}
+
+model ref_indikator_2024 {
+  kode           String   @id @db.VarChar(10)
+  nama_indikator String   @db.Text
+  nilai_minimum  Decimal? @db.Decimal(10, 2)
+  nilai_maximum  Decimal? @db.Decimal(10, 2)
+}
+
+model skor_dimensi_provinsi_2018_2023 {
+  tahun         Int      @db.Year
+  kode_bps      String   @db.VarChar(10)
+  nama_provinsi String   @db.VarChar(100)
+  dimensi_1     Decimal? @db.Decimal(5, 2)
+  dimensi_2     Decimal? @db.Decimal(5, 2)
+  dimensi_3     Decimal? @db.Decimal(5, 2)
+  dimensi_4     Decimal? @db.Decimal(5, 2)
+  dimensi_5     Decimal? @db.Decimal(5, 2)
+  dimensi_6     Decimal? @db.Decimal(5, 2)
+  dimensi_7     Decimal? @db.Decimal(5, 2)
+  ipk           Decimal? @db.Decimal(5, 2)
+
+  @@id([tahun, kode_bps])
+}
+
+model skor_dimensi_provinsi_2024 {
+  tahun         Int      @db.Year
+  kode_bps      String   @db.VarChar(10)
+  nama_provinsi String   @db.VarChar(100)
+  dimensi_1     Decimal? @db.Decimal(5, 2)
+  dimensi_2     Decimal? @db.Decimal(5, 2)
+  dimensi_3     Decimal? @db.Decimal(5, 2)
+  dimensi_4     Decimal? @db.Decimal(5, 2)
+  dimensi_5     Decimal? @db.Decimal(5, 2)
+  dimensi_6     Decimal? @db.Decimal(5, 2)
+  dimensi_7     Decimal? @db.Decimal(5, 2)
+  skor_ipk      Decimal? @db.Decimal(5, 2)
+
+  @@id([tahun, kode_bps])
+}
+
+model skor_indikator_provinsi_2018_2023 {
+  tahun         Int      @db.Year
+  kode_bps      String   @db.VarChar(10)
+  nama_provinsi String   @db.VarChar(100)
+  x1_1          Decimal? @db.Decimal(5, 2)
+  x2_1          Decimal? @db.Decimal(5, 2)
+  x2_2          Decimal? @db.Decimal(5, 2)
+  x2_3          Decimal? @db.Decimal(5, 2)
+  x2_4          Decimal? @db.Decimal(5, 2)
+  x2_5          Decimal? @db.Decimal(5, 2)
+  x2_6          Decimal? @db.Decimal(5, 2)
+  x3_1          Decimal? @db.Decimal(5, 2)
+  x3_2          Decimal? @db.Decimal(5, 2)
+  x3_3          Decimal? @db.Decimal(5, 2)
+  x3_4          Decimal? @db.Decimal(5, 2)
+  x3_5          Decimal? @db.Decimal(5, 2)
+  x3_6          Decimal? @db.Decimal(5, 2)
+  x3_7          Decimal? @db.Decimal(5, 2)
+  x3_8          Decimal? @db.Decimal(5, 2)
+  x4_1          Decimal? @db.Decimal(5, 2)
+  x4_2          Decimal? @db.Decimal(5, 2)
+  x4_3          Decimal? @db.Decimal(5, 2)
+  x4_4          Decimal? @db.Decimal(5, 2)
+  x4_5          Decimal? @db.Decimal(5, 2)
+  x4_6          Decimal? @db.Decimal(5, 2)
+  x5_1          Decimal? @db.Decimal(5, 2)
+  x5_2          Decimal? @db.Decimal(5, 2)
+  x5_3          Decimal? @db.Decimal(5, 2)
+  x5_4          Decimal? @db.Decimal(5, 2)
+  x6_1          Decimal? @db.Decimal(5, 2)
+  x6_2          Decimal? @db.Decimal(5, 2)
+  x6_3          Decimal? @db.Decimal(5, 2)
+  x7_1          Decimal? @db.Decimal(5, 2)
+  x7_2          Decimal? @db.Decimal(5, 2)
+  x7_3          Decimal? @db.Decimal(5, 2)
+
+  @@id([tahun, kode_bps])
+}
+
+model skor_indikator_provinsi_2024 {
+  tahun         Int      @db.Year
+  kode_bps      String   @db.VarChar(10)
+  nama_provinsi String   @db.VarChar(100)
+  x1_1          Decimal? @db.Decimal(5, 2)
+  x1_2          Decimal? @db.Decimal(5, 2)
+  x2_1          Decimal? @db.Decimal(5, 2)
+  x2_2          Decimal? @db.Decimal(5, 2)
+  x2_3          Decimal? @db.Decimal(5, 2)
+  x3_1          Decimal? @db.Decimal(5, 2)
+  x3_2          Decimal? @db.Decimal(5, 2)
+  x3_3          Decimal? @db.Decimal(5, 2)
+  x4_1          Decimal? @db.Decimal(5, 2)
+  x4_2          Decimal? @db.Decimal(5, 2)
+  x4_3          Decimal? @db.Decimal(5, 2)
+  x4_4          Decimal? @db.Decimal(5, 2)
+  x4_5          Decimal? @db.Decimal(5, 2)
+  x4_6          Decimal? @db.Decimal(5, 2)
+  x5_1          Decimal? @db.Decimal(5, 2)
+  x5_2          Decimal? @db.Decimal(5, 2)
+  x5_3          Decimal? @db.Decimal(5, 2)
+  x5_4          Decimal? @db.Decimal(5, 2)
+  x6_1          Decimal? @db.Decimal(5, 2)
+  x6_2          Decimal? @db.Decimal(5, 2)
+  x6_3          Decimal? @db.Decimal(5, 2)
+  x7_1          Decimal? @db.Decimal(5, 2)
+  x7_2          Decimal? @db.Decimal(5, 2)
+  x7_3          Decimal? @db.Decimal(5, 2)
+
+  @@id([tahun, kode_bps])
+}
+
+model sumber_data_indikator_2018 {
+  tahun Int     @id @db.Year
+  x1_1  String? @db.VarChar(100)
+  x2_1  String? @db.VarChar(100)
+  x2_2  String? @db.VarChar(100)
+  x2_3  String? @db.VarChar(100)
+  x2_4  String? @db.VarChar(100)
+  x2_5  String? @db.VarChar(100)
+  x2_6  String? @db.VarChar(100)
+  x3_1  String? @db.VarChar(100)
+  x3_2  String? @db.VarChar(100)
+  x3_3  String? @db.VarChar(100)
+  x3_4  String? @db.VarChar(100)
+  x3_5  String? @db.VarChar(100)
+  x3_6  String? @db.VarChar(100)
+  x3_7  String? @db.VarChar(100)
+  x3_8  String? @db.VarChar(100)
+  x4_1  String? @db.VarChar(100)
+  x4_2  String? @db.VarChar(100)
+  x4_3  String? @db.VarChar(100)
+  x4_4  String? @db.VarChar(100)
+  x4_5  String? @db.VarChar(100)
+  x4_6  String? @db.VarChar(100)
+  x5_1  String? @db.VarChar(100)
+  x5_2  String? @db.VarChar(100)
+  x5_3  String? @db.VarChar(100)
+  x5_4  String? @db.VarChar(100)
+  x6_1  String? @db.VarChar(100)
+  x6_2  String? @db.VarChar(100)
+  x6_3  String? @db.VarChar(100)
+  x7_1  String? @db.VarChar(100)
+  x7_2  String? @db.VarChar(100)
+  x7_3  String? @db.VarChar(100)
+}
+
+model sumber_data_indikator_2024 {
+  tahun Int     @id @db.Year
+  x1_1  String? @db.VarChar(100)
+  x1_2  String? @db.VarChar(100)
+  x2_1  String? @db.VarChar(100)
+  x2_2  String? @db.VarChar(100)
+  x2_3  String? @db.VarChar(100)
+  x3_1  String? @db.VarChar(100)
+  x3_2  String? @db.VarChar(100)
+  x3_3  String? @db.VarChar(100)
+  x4_1  String? @db.VarChar(100)
+  x4_2  String? @db.VarChar(100)
+  x4_3  String? @db.VarChar(100)
+  x4_4  String? @db.VarChar(100)
+  x4_5  String? @db.VarChar(100)
+  x4_6  String? @db.VarChar(100)
+  x5_1  String? @db.VarChar(100)
+  x5_2  String? @db.VarChar(100)
+  x5_3  String? @db.VarChar(100)
+  x5_4  String? @db.VarChar(100)
+  x6_1  String? @db.VarChar(100)
+  x6_2  String? @db.VarChar(100)
+  x6_3  String? @db.VarChar(100)
+  x7_1  String? @db.VarChar(100)
+  x7_2  String? @db.VarChar(100)
+  x7_3  String? @db.VarChar(100)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model surat_masuk {
+  id               BigInt               @id @default(autoincrement()) @db.UnsignedBigInt
+  nomor_tiket      String?              @unique(map: "uq_surat_nomor_tiket") @db.VarChar(50)
+  nomor_agenda     String?              @db.VarChar(50)
+  nomor_surat      String?              @db.VarChar(150)
+  tanggal_surat    DateTime?            @db.Date
+  tanggal_diterima DateTime             @db.Date
+  nama_pengirim    String               @db.VarChar(150)
+  email_pengirim   String               @db.VarChar(150)
+  telepon_pengirim String?              @db.VarChar(50)
+  asal_instansi    String?              @db.VarChar(200)
+  kategori         surat_masuk_kategori @default(lainnya)
+  perihal          String               @db.VarChar(255)
+  ringkasan        String               @db.Text
+  file_surat       String?              @db.VarChar(255)
+  status           surat_masuk_status   @default(baru)
+  disposisi_kepada String?              @db.VarChar(200)
+  catatan          String?              @db.Text
+  created_at       DateTime             @default(now()) @db.DateTime(0)
+  updated_at       DateTime             @default(now()) @db.DateTime(0)
+
+  @@index([email_pengirim], map: "idx_surat_email")
+  @@index([nomor_agenda], map: "idx_surat_nomor_agenda")
+  @@index([status], map: "idx_surat_status")
+  @@index([tanggal_diterima], map: "idx_surat_tanggal")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model metodologi_versi {
+  id            Int      @id @default(autoincrement()) @db.UnsignedInt
+  kode          String   @unique(map: "uq_metodologi_kode") @db.VarChar(20)
+  label         String   @db.VarChar(100)
+  year_start    Int      @db.Year
+  year_end      Int?     @db.Year
+  tabel_ref     String   @db.VarChar(64)
+  tabel_skor    String   @db.VarChar(64)
+  tabel_sumber  String   @db.VarChar(64)
+  tabel_dimensi String?  @db.VarChar(64)
+  is_active     Boolean  @default(true)
+  created_at    DateTime @default(now()) @db.Timestamp(0)
+  updated_at    DateTime @default(now()) @db.Timestamp(0)
+
+  @@index([year_start], map: "idx_year_start")
+}
+
+model faqs {
+  id         Int      @id @default(autoincrement()) @db.UnsignedInt
+  kategori   String   @db.VarChar(50)
+  pertanyaan String   @db.Text
+  jawaban    String   @db.Text
+  urutan     Int      @default(0)
+  is_active  Boolean  @default(true)
+  created_at DateTime @default(now()) @db.Timestamp(0)
+  updated_at DateTime @default(now()) @db.Timestamp(0)
+
+  @@index([is_active, urutan], map: "idx_faq_active_urutan")
+  @@index([kategori], map: "idx_faq_kategori")
+}
+
+/// Dokumen Dasar Hukum & Kebijakan (halaman /pages/dasar-hukum)
+model dasar_hukum {
+  id         Int      @id @default(autoincrement()) @db.UnsignedInt
+  nomor_urut Int      @default(0) @db.UnsignedInt
+  badge      String   @db.VarChar(100)
+  judul      String   @db.VarChar(255)
+  deskripsi  String?  @db.Text
+  file_url   String   @db.VarChar(500)
+  is_active  Boolean  @default(true)
+  created_at DateTime @default(now()) @db.DateTime(0)
+  updated_at DateTime @default(now()) @updatedAt @db.DateTime(0)
+
+  @@index([is_active, nomor_urut], map: "idx_dasar_hukum_active_urut")
+}
+
+model admin_roles {
+  admin_id    Int
+  role_id     Int
+  assigned_at DateTime @default(now()) @db.Timestamp(0)
+  admins      admins   @relation(fields: [admin_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "fk_ar_admin")
+  roles       roles    @relation(fields: [role_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "fk_ar_role")
+
+  @@id([admin_id, role_id])
+  @@index([role_id], map: "fk_ar_role")
+}
+
+model data_pengajuan {
+  id                      BigInt                   @id @default(autoincrement())
+  jenis                   data_pengajuan_jenis
+  tahun                   Int
+  kode_provinsi           String?                  @db.VarChar(5)
+  status                  data_pengajuan_status    @default(draft)
+  catatan_verifikator     String?                  @db.Text
+  dibuat_oleh             Int?
+  diverifikasi_oleh       Int?
+  dipublish_oleh          Int?
+  created_at              DateTime                 @default(now()) @db.Timestamp(0)
+  updated_at              DateTime                 @default(now()) @db.Timestamp(0)
+  submitted_at            DateTime?                @db.Timestamp(0)
+  approved_at             DateTime?                @db.Timestamp(0)
+  published_at            DateTime?                @db.Timestamp(0)
+  rejected_at             DateTime?                @db.Timestamp(0)
+  data_pengajuan_log      data_pengajuan_log[]
+  data_pengajuan_nasional data_pengajuan_nasional?
+  data_pengajuan_provinsi data_pengajuan_provinsi?
+
+  @@index([kode_provinsi, tahun], map: "idx_prov_tahun")
+  @@index([status, jenis, tahun], map: "idx_status_jenis")
+}
+
+model data_pengajuan_log {
+  id             BigInt         @id @default(autoincrement())
+  pengajuan_id   BigInt
+  admin_id       Int?
+  aksi           String         @db.VarChar(40)
+  catatan        String?        @db.Text
+  created_at     DateTime       @default(now()) @db.Timestamp(0)
+  data_pengajuan data_pengajuan @relation(fields: [pengajuan_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "fk_dpl")
+
+  @@index([pengajuan_id], map: "idx_pengajuan")
+}
+
+model data_pengajuan_nasional {
+  pengajuan_id   BigInt         @id
+  skor_ipk       Decimal        @db.Decimal(5, 2)
+  skor_dimensi   String         @db.LongText
+  data_pengajuan data_pengajuan @relation(fields: [pengajuan_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "fk_dpn")
+}
+
+model data_pengajuan_provinsi {
+  pengajuan_id   BigInt         @id
+  skor_ipk       Decimal        @db.Decimal(5, 2)
+  skor_dimensi   String         @db.LongText
+  data_pengajuan data_pengajuan @relation(fields: [pengajuan_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "fk_dpp")
+}
+
+model permissions {
+  id               Int                @id @default(autoincrement())
+  kode             String             @unique(map: "kode") @db.VarChar(60)
+  nama             String             @db.VarChar(100)
+  grup             String             @db.VarChar(40)
+  deskripsi        String?            @db.VarChar(255)
+  role_permissions role_permissions[]
+}
+
+model role_permissions {
+  role_id       Int
+  permission_id Int
+  permissions   permissions @relation(fields: [permission_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "fk_rp_perm")
+  roles         roles       @relation(fields: [role_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "fk_rp_role")
+
+  @@id([role_id, permission_id])
+  @@index([permission_id], map: "fk_rp_perm")
+}
+
+model roles {
+  id               Int                @id @default(autoincrement())
+  kode             String             @unique(map: "kode") @db.VarChar(40)
+  nama             String             @db.VarChar(80)
+  deskripsi        String?            @db.VarChar(255)
+  urutan           Int                @default(0)
+  created_at       DateTime           @default(now()) @db.Timestamp(0)
+  admin_roles      admin_roles[]
+  role_permissions role_permissions[]
+}
+
+enum admins_status {
+  aktif
+  nonaktif
+}
+
+enum permohonan_data_jenis_pemohon {
+  pemerintah
+  akademisi
+  mahasiswa
+  swasta
+  masyarakat
+  lainnya
+}
+
+enum permohonan_data_wilayah {
+  nasional
+  provinsi
+  kab_kota @map("kab-kota")
+}
+
+enum surat_masuk_kategori {
+  data
+  metodologi
+  publikasi
+  permohonan_data @map("permohonan-data")
+  website
+  lainnya
+}
+
+enum permohonan_data_format_data {
+  xlsx
+  csv
+  pdf
+  lainnya
+}
+
+enum surat_masuk_status {
+  baru
+  dibaca
+  didisposisikan
+  selesai
+}
+
+enum metadata_indikator_dapat_diakses_umum {
+  Ya
+  Tidak
+}
+
+enum permohonan_data_status {
+  baru
+  diproses
+  selesai
+  ditolak
+}
+
+enum data_pengajuan_jenis {
+  nasional
+  provinsi
+}
+
+enum admins_role {
+  superadmin
+  admin
+  data_admin
+  data_verifikator
+  content_admin
+  service_admin
+}
+
+enum data_pengajuan_status {
+  draft
+  submitted
+  approved
+  rejected
+  published
+}
