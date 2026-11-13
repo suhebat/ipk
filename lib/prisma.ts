@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { PrismaMariaDB } from '@prisma/adapter-mariadb';
+import { PrismaMariaDb } from '@prisma/adapter-mariadb'; // <-- ganti jadi PrismaMariaDb (b kecil)
 import mariadb from 'mariadb';
 
 const globalForPrisma = globalThis as unknown as {
@@ -13,10 +13,9 @@ function createPrismaClient(): PrismaClient {
     throw new Error('DATABASE_URL environment variable is not defined.');
   }
 
-  // Konfigurasi pool koneksi MariaDB yang aman untuk Vercel & Railway
   const pool = mariadb.createPool({
     connectionLimit: 5,
-    connectTimeout: 30000, // Timeout 30 detik agar koneksi remote tidak cepat putus
+    connectTimeout: 30000,
     idleTimeout: 30000,
     acquireTimeout: 30000,
     host: new URL(connectionUrl).hostname,
@@ -24,10 +23,10 @@ function createPrismaClient(): PrismaClient {
     user: new URL(connectionUrl).username,
     password: decodeURIComponent(new URL(connectionUrl).password),
     database: new URL(connectionUrl).pathname.replace('/', ''),
-    ssl: false, // Railway TCP Proxy MariaDB/MySQL default tidak memerlukan SSL kustom
+    ssl: false,
   });
 
-  const adapter = new PrismaMariaDB(pool);
+  const adapter = new PrismaMariaDb(pool); // <-- ganti jadi PrismaMariaDb
 
   return new PrismaClient({
     adapter,
@@ -35,7 +34,6 @@ function createPrismaClient(): PrismaClient {
   });
 }
 
-// Mencegah pembuatan instance baru secara berulang saat hot-reload di Next.js
 export const prisma = globalForPrisma.prisma ?? createPrismaClient();
 
 if (process.env.NODE_ENV !== 'production') {
