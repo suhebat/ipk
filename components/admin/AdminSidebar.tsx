@@ -88,27 +88,28 @@ export default function AdminSidebar({
 
   return (
     <>
-      {/* Backdrop mobile */}
+      {/* Backdrop mobile dengan z-index z-50 */}
       <div
-        className={`fixed inset-0 z-30 bg-black/40 md:hidden transition-opacity ${
+        className={`fixed inset-0 z-50 bg-black/60 md:hidden transition-opacity duration-200 ${
           mobileOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
         }`}
         onClick={onCloseMobile}
         aria-hidden={!mobileOpen}
       />
 
+      {/* Sidebar Aside dengan z-index z-[60], h-screen / h-dvh, dan shadow */}
       <aside
         className={`
-          fixed top-0 left-0 z-40 h-full w-64
+          fixed top-0 left-0 z-[60] h-screen h-dvh w-64
           bg-white dark:bg-zinc-900
           border-r border-zinc-200 dark:border-zinc-800
-          flex flex-col justify-between shrink-0 select-none overflow-x-hidden
+          flex flex-col justify-between shrink-0 select-none overflow-x-hidden shadow-2xl md:shadow-none
           transition-transform duration-200 ease-out
           md:translate-x-0
           ${mobileOpen ? "translate-x-0" : "-translate-x-full"}
         `}
       >
-        <div className="p-4 space-y-4 overflow-y-auto overflow-x-hidden">
+        <div className="p-4 space-y-4 overflow-y-auto overflow-x-hidden flex-1">
           {/* Brand Header */}
           <div className="flex items-center justify-between px-1">
             <div className="flex items-center gap-2.5">
@@ -392,7 +393,7 @@ export default function AdminSidebar({
           </nav>
         </div>
 
-        <div className="p-3 border-t border-zinc-200 dark:border-zinc-800 text-[11px] text-zinc-400 text-center">
+        <div className="p-3 border-t border-zinc-200 dark:border-zinc-800 text-[11px] text-zinc-400 text-center shrink-0">
           Versi {pkg.version} • RBAC Active
         </div>
       </aside>
