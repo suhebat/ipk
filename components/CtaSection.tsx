@@ -1,3 +1,4 @@
+
 import { ReactNode, Children } from "react";
 
 interface CtaSectionProps {
@@ -34,7 +35,7 @@ export default function CtaSection({
         >
           <div className="absolute inset-0 bg-white/50 dark:bg-zinc-950/75 pointer-events-none z-0" />
 
-          {/* 1 tombol: teks kiri + tombol kanan | 2+ tombol: teks full lalu tombol di bawah */}
+          {/* 1 tombol: teks kiri + tombol kanan | 2+ tombol: teks di atas + tombol di bawah */}
           <div
             className={`relative z-10 ${
               isSingle
@@ -66,10 +67,10 @@ export default function CtaSection({
 
             {children && (
               <div
-                className={`flex flex-wrap items-center gap-3 shrink-0 ${
+                className={`flex gap-3 shrink-0 ${
                   isSingle
-                    ? "justify-start md:justify-end"
-                    : "justify-start"
+                    ? "flex-wrap items-center justify-start md:justify-end"
+                    : "flex-col items-stretch md:flex-row md:items-center justify-start [&>*]:w-full md:[&>*]:w-auto"
                 }`}
               >
                 {children}
