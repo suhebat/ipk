@@ -28,12 +28,13 @@ export default function ProvTrendBars({ tren, provinceName }: Props) {
               className="flex-1 flex flex-col items-center gap-1 min-w-0"
             >
               <span className="text-[10px] sm:text-xs font-medium text-zinc-600 dark:text-zinc-300">
-                {t.skor_ipk != null ? fmt(t.skor_ipk, 1) : "—"}
+                {t.skor_ipk != null ? fmt(t.skor_ipk, 2) : "—"}
               </span>
               <div className="w-full flex items-end justify-center h-28">
                 <div
                   className="w-full max-w-[36px] rounded-t-md bg-gradient-to-t from-[#B8860B] to-[#F8DA8D]"
                   style={{ height: `${h}%` }}
+                  title={`${t.tahun}: ${fmt(t.skor_ipk, 2)}`}
                 />
               </div>
               <span className="text-[10px] sm:text-xs text-zinc-500">
