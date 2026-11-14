@@ -35,7 +35,6 @@ export default function CtaSection({
         >
           <div className="absolute inset-0 bg-white/50 dark:bg-zinc-950/75 pointer-events-none z-0" />
 
-          {/* 1 tombol: teks kiri + tombol kanan | 2+ tombol: teks di atas + tombol di bawah */}
           <div
             className={`relative z-10 ${
               isSingle
@@ -67,13 +66,29 @@ export default function CtaSection({
 
             {children && (
               <div
-                className={`flex gap-3 shrink-0 ${
+                className={`flex gap-3 ${
                   isSingle
-                    ? "flex-wrap items-center justify-start md:justify-end"
-                    : "flex-col items-stretch md:flex-row md:items-center justify-start [&>*]:w-full md:[&>*]:w-auto"
+                    ? "shrink-0 flex-wrap items-center justify-start md:justify-end"
+                    : "w-full flex-col items-stretch md:flex-row md:items-center md:w-auto"
                 }`}
               >
-                {children}
+                {Children.map(children, (child) => {
+                  if (!child) return null;
+
+                  if (isMultiple && typeof child === "object" && "props" in child) {
+                    const element = child as React.ReactElement<{
+                      className?: string;
+                    }>;
+
+                    return (
+                      <div className="w-full md:w-auto">
+                        {element}
+                      </div>
+                    );
+                  }
+
+                  return child;
+                })}
               </div>
             )}
           </div>

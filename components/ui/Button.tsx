@@ -1,3 +1,4 @@
+
 "use client";
 
 import { ReactNode, ButtonHTMLAttributes, AnchorHTMLAttributes } from "react";
@@ -73,6 +74,7 @@ export default function Button({
 
   if ("href" in props && props.href) {
     const { href, ...rest } = props as ButtonAsLink;
+
     return (
       <a href={href} className={`group ${cls}`} {...rest}>
         {content}
@@ -81,6 +83,7 @@ export default function Button({
   }
 
   const buttonProps = props as ButtonAsButton;
+
   return (
     <button type="button" className={`group ${cls}`} {...buttonProps}>
       {content}
