@@ -248,30 +248,33 @@ export default function HasilNasionalPage() {
           title="Unduh data IPK Nasional"
           description="Isi kuesioner singkat, lalu unduh data dalam format PDF atau ZIP (Excel + README) untuk tahun yang dipilih."
         >
-          <div className="flex flex-row gap-3 w-full max-w-lg">
-            <Button
-              variant="red"
-              className="!px-3 sm:!px-6 !py-3 text-xs sm:text-sm flex-1 min-w-0"
-              onClick={() => openDownloadFlow("pdf")}
-              disabled={!data}
-            >
-              <span className="inline-flex items-center justify-center gap-1.5 sm:gap-2">
-                <FileText size={16} className="shrink-0" />
-                <span className="truncate">PDF (Tahun {tahun})</span>
-              </span>
-            </Button>
-            <Button
-              variant="green"
-              className="!px-3 sm:!px-6 !py-3 text-xs sm:text-sm flex-1 min-w-0"
-              onClick={() => openDownloadFlow("xlsx")}
-              disabled={!data}
-            >
-              <span className="inline-flex items-center justify-center gap-1.5 sm:gap-2">
-                <FileSpreadsheet size={16} className="shrink-0" />
-                <span className="truncate">Excel (Tahun {tahun})</span>
-              </span>
-            </Button>
-          </div>
+          
+		<div className="flex flex-col sm:flex-row gap-3 w-full max-w-lg">
+		  <Button
+			variant="red"
+			className="!px-3 sm:!px-6 !py-3 text-xs sm:text-sm w-full sm:flex-1 min-w-0"
+			onClick={() => openDownloadFlow("pdf")}
+			disabled={!data}
+		  >
+			<span className="inline-flex items-center justify-center gap-1.5 sm:gap-2">
+			  <FileText size={16} className="shrink-0" />
+			  <span className="truncate">PDF (Tahun {tahun})</span>
+			</span>
+		  </Button>
+
+		  <Button
+			variant="green"
+			className="!px-3 sm:!px-6 !py-3 text-xs sm:text-sm w-full sm:flex-1 min-w-0"
+			onClick={() => openDownloadFlow("xlsx")}
+			disabled={!data}
+		  >
+			<span className="inline-flex items-center justify-center gap-1.5 sm:gap-2">
+			  <FileSpreadsheet size={16} className="shrink-0" />
+			  <span className="truncate">Excel (Tahun {tahun})</span>
+			</span>
+		  </Button>
+		</div>
+
         </CtaSection>
 
         <Footer />
