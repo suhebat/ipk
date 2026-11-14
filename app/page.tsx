@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
@@ -25,7 +24,6 @@ import {
   VenusAndMars,
   ArrowUpCircle,
   ArrowDownCircle,
-  Star,
 } from "lucide-react";
 
 const DIMENSI_LIST = [
@@ -61,7 +59,6 @@ export default function IPKHomepage() {
     queryFn: fetchNasionalData,
   });
 
-  /** Tahun dari DB — otomatis bertambah jika data baru masuk */
   const daftarTahun = useMemo(() => {
     if (!dataNasional?.length) return [] as number[];
     return [...new Set(dataNasional.map((d) => d.tahun))].sort((a, b) => a - b);
@@ -75,7 +72,6 @@ export default function IPKHomepage() {
     return map;
   }, [daftarTahun]);
 
-  // Inisialisasi pilihan tahun dari data terbaru
   useEffect(() => {
     if (!daftarTahun.length || yearsReady) return;
     const last = daftarTahun[daftarTahun.length - 1];
@@ -88,7 +84,6 @@ export default function IPKHomepage() {
     setYearsReady(true);
   }, [daftarTahun, yearsReady]);
 
-  // ===== Skor Hero =====
   const latest = dataNasional?.[dataNasional.length - 1];
   const previous = dataNasional?.[dataNasional.length - 2];
 
@@ -109,7 +104,6 @@ export default function IPKHomepage() {
         )
       : null;
 
-  // ===== Animasi running skor =====
   const [displaySkor, setDisplaySkor] = useState(0);
   const [displaySelisih, setDisplaySelisih] = useState(0);
   const [displayPertumbuhan, setDisplayPertumbuhan] = useState(0);
@@ -206,7 +200,6 @@ export default function IPKHomepage() {
     { icon: VenusAndMars, name: "Gender", color: "#f97316", muted: "#c2410c" },
   ];
 
-  // ===== Data ringkasan perbandingan =====
   const rows = DIMENSI_LIST.map(({ key, label }) => {
     const val1 = Number(dataY1?.[key] ?? 0);
     const val2 = Number(dataY2?.[key] ?? 0);
@@ -225,9 +218,7 @@ export default function IPKHomepage() {
     <div className="min-h-screen bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 transition-colors relative">
       <Navbar />
 
-      {/* =========================================================
-           1. HERO SECTION (Parallax & Dual Column)
-      ========================================================= */}
+      {/* 1. HERO */}
       <section
         className="relative min-h-[660px] flex items-center bg-fixed bg-cover bg-center overflow-hidden py-24 lg:py-32"
         style={{ backgroundImage: "url('/images/hero/hero-bg-1.jpg')" }}
@@ -236,7 +227,6 @@ export default function IPKHomepage() {
 
         <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-10 lg:px-14 xl:px-20 w-full">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 xl:gap-14 items-center">
-            {/* Kiri — Teks Utama */}
             <div className="lg:col-span-8 text-left text-white lg:pr-4">
               <span className="text-white/80 text-xs md:text-sm font-bold tracking-widest uppercase mb-4 inline-block">
                 INDEKS PEMBANGUNAN KEBUDAYAAN
@@ -265,7 +255,6 @@ export default function IPKHomepage() {
               </div>
             </div>
 
-            {/* Kanan — Card Skor IPK */}
             <div className="lg:col-span-4 flex justify-center lg:justify-end">
               <div className="w-full max-w-md bg-white/95 dark:bg-zinc-900/90 backdrop-blur-md rounded-3xl border border-white/40 dark:border-zinc-800 shadow-2xl overflow-hidden text-center">
                 <div className="pt-9 pb-8 px-8">
@@ -318,9 +307,7 @@ export default function IPKHomepage() {
         </div>
       </section>
 
-      {/* =========================================================
-           2. TENTANG IPK
-      ========================================================= */}
+      {/* 2. TENTANG IPK */}
       <section className="relative section-py border-t border-zinc-200 dark:border-zinc-800 overflow-hidden">
         <div
           className="absolute inset-0 opacity-[0.38] dark:opacity-[0.28] pointer-events-none"
@@ -352,20 +339,14 @@ export default function IPKHomepage() {
             </p>
           </div>
           <div className="mt-12 flex justify-center">
-            <Button
-              variant="gold-solid"
-              showArrow
-              href="/pages/tentang-ipk"
-            >
+            <Button variant="gold-solid" showArrow href="/pages/tentang-ipk">
               Lebih Lanjut
             </Button>
           </div>
         </div>
       </section>
 
-      {/* =========================================================
-           3. 7 DIMENSI IPK
-      ========================================================= */}
+      {/* 3. 7 DIMENSI */}
       <section className="section-alt section-py">
         <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-14 text-center">
           <SectionHeader
@@ -400,20 +381,14 @@ export default function IPKHomepage() {
             metodologi.
           </p>
           <div className="mt-10 flex justify-center">
-            <Button
-              variant="gold-solid"
-              showArrow
-              href="/pages/metodologi"
-            >
+            <Button variant="gold-solid" showArrow href="/pages/metodologi">
               Pelajari Metodologi &amp; Indikator
             </Button>
           </div>
         </div>
       </section>
 
-      {/* =========================================================
-           4. TREN NASIONAL
-      ========================================================= */}
+      {/* 4. TREN NASIONAL */}
       <section id="profil-ipk-nasional" className="section-base section-py">
         <div className="max-w-6xl mx-auto px-6 sm:px-10 lg:px-14 text-center">
           <SectionHeader
@@ -430,9 +405,7 @@ export default function IPKHomepage() {
         </div>
       </section>
 
-      {/* =========================================================
-           5. RADAR & RINGKASAN
-      ========================================================= */}
+      {/* 5. RADAR & RINGKASAN */}
       <section className="pb-24 lg:pb-28 border-t border-zinc-200 dark:border-zinc-800 pt-16">
         <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-14 text-center">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
@@ -447,7 +420,6 @@ export default function IPKHomepage() {
                 Perbandingan Nilai per Dimensi
               </h3>
 
-              {/* Tab mode — inactive tetap terlihat sebagai tombol */}
               <div className="flex justify-start my-5">
                 <div className="inline-flex p-1.5 rounded-2xl bg-zinc-100 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 shadow-inner gap-1">
                   <button
@@ -628,7 +600,6 @@ export default function IPKHomepage() {
                       {rows.map((r) => {
                         const isMax = r.key === maxRow?.key && maxRow.diff > 0;
                         const isMin = r.key === minRow?.key && minRow.diff < 0;
-                        const isHighlight = isMax || isMin;
 
                         const rowBg = isMax
                           ? "bg-emerald-100/70 dark:bg-emerald-950/50"
@@ -649,12 +620,7 @@ export default function IPKHomepage() {
                             className={`border-b border-zinc-200 dark:border-zinc-800 ${rowBg}`}
                           >
                             <td className="py-2.5 text-zinc-700 dark:text-zinc-400">
-                              <span className="inline-flex items-center gap-1.5">
-                                {r.label}
-                                {isHighlight && (
-                                  <Star className="w-3.5 h-3.5 fill-current" />
-                                )}
-                              </span>
+                              {r.label}
                             </td>
                             <td className="py-2.5 text-right tabular-nums text-zinc-700 dark:text-zinc-300">
                               {r.val1.toFixed(2)}
@@ -678,20 +644,14 @@ export default function IPKHomepage() {
           </div>
 
           <div className="mt-14 flex justify-center">
-            <Button
-              variant="gold"
-              showArrow
-              href="/pages/hasil-nasional"
-            >
+            <Button variant="gold" showArrow href="/pages/hasil-nasional">
               Lihat Detail Indikator Nasional
             </Button>
           </div>
         </div>
       </section>
 
-      {/* =========================================================
-           6. PROFIL IPK PROVINSI (MAP)
-      ========================================================= */}
+      {/* 6. MAP PROVINSI */}
       <section className="section-alt section-py">
         <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-14 text-center">
           <SectionHeader
@@ -703,9 +663,7 @@ export default function IPKHomepage() {
         </div>
       </section>
 
-      {/* =========================================================
-           7. CALL TO ACTION (CTA)
-      ========================================================= */}
+      {/* 7. CTA */}
       <CtaSection
         eyebrow="SIMULASI · METODOLOGI 2024"
         title="Coba simulasi perhitungan IPK"
@@ -716,9 +674,7 @@ export default function IPKHomepage() {
         </Button>
       </CtaSection>
 
-      {/* =========================================================
-           8. KOLEKSI BUKU DIGITAL (PUBLIKASI)
-      ========================================================= */}
+      {/* 8. PUBLIKASI */}
       <CarouselPublikasi />
 
       <Footer />

@@ -49,7 +49,6 @@ const DIMENSI_KEYS: { key: keyof Dimensi; label: string }[] = [
   { key: "gender", label: "Gender" },
 ];
 
-/** Palet tetap 2018–2024 + sikluskan otomatis untuk tahun berikutnya */
 const BASE_YEAR_COLORS: Record<number, string> = {
   2018: "#FF5733",
   2019: "#33AA57",
@@ -60,35 +59,31 @@ const BASE_YEAR_COLORS: Record<number, string> = {
   2024: "#E11D48",
 };
 
-/** Warna cadangan berurutan untuk tahun ≥ 2025 (kontras & rapi) */
 const EXTRA_PALETTE = [
-  "#B8860B", // gold
-  "#7C3AED", // violet
-  "#059669", // emerald
-  "#DC2626", // red
-  "#2563EB", // blue
-  "#EA580C", // orange
-  "#DB2777", // pink
-  "#0D9488", // teal
-  "#4F46E5", // indigo
-  "#65A30D", // lime
+  "#B8860B",
+  "#7C3AED",
+  "#059669",
+  "#DC2626",
+  "#2563EB",
+  "#EA580C",
+  "#DB2777",
+  "#0D9488",
+  "#4F46E5",
+  "#65A30D",
 ];
 
 export function colorForYear(year: number): string {
   if (BASE_YEAR_COLORS[year]) return BASE_YEAR_COLORS[year];
-  // tahun setelah 2024: urut dari EXTRA_PALETTE
   const idx = Math.max(0, year - 2025);
   return EXTRA_PALETTE[idx % EXTRA_PALETTE.length];
 }
 
-/** Apakah warna terang (teks tombol sebaiknya gelap) */
 export function isBrightColor(hex: string): boolean {
   const h = hex.replace("#", "");
   if (h.length !== 6) return false;
   const r = parseInt(h.slice(0, 2), 16);
   const g = parseInt(h.slice(2, 4), 16);
   const b = parseInt(h.slice(4, 6), 16);
-  // perceived luminance
   return (0.299 * r + 0.587 * g + 0.114 * b) / 255 > 0.65;
 }
 
@@ -152,7 +147,7 @@ export default function ChartRadarNasional({
             return (
               <Radar
                 key={yr}
-                name={`Tahun ${yr}`}
+                name={String(yr)}
                 dataKey={`thn_${yr}`}
                 stroke={color}
                 fill={color}
@@ -170,10 +165,10 @@ export default function ChartRadarNasional({
               color: "#fafafa",
               fontSize: "12px",
             }}
-            formatter={(value) => {
-			  const v = value == null ? 0 : Number(value);
-			  return [v.toFixed(2), "IPK"];
-			}}
+            formatter={(value, name) => {
+              const v = value == null ? 0 : Number(value);
+              return [v.toFixed(2), String(name)];
+            }}
           />
         </RadarChart>
       </ResponsiveContainer>
