@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
@@ -351,7 +352,11 @@ export default function IPKHomepage() {
             </p>
           </div>
           <div className="mt-12 flex justify-center">
-            <Button variant="gold-solid" showArrow>
+            <Button
+              variant="gold-solid"
+              showArrow
+              href="/pages/tentang-ipk"
+            >
               Lebih Lanjut
             </Button>
           </div>
@@ -395,7 +400,11 @@ export default function IPKHomepage() {
             metodologi.
           </p>
           <div className="mt-10 flex justify-center">
-            <Button variant="gold-solid" showArrow>
+            <Button
+              variant="gold-solid"
+              showArrow
+              href="/pages/metodologi"
+            >
               Pelajari Metodologi &amp; Indikator
             </Button>
           </div>
@@ -669,7 +678,11 @@ export default function IPKHomepage() {
           </div>
 
           <div className="mt-14 flex justify-center">
-            <Button variant="gold" showArrow>
+            <Button
+              variant="gold"
+              showArrow
+              href="/pages/hasil-nasional"
+            >
               Lihat Detail Indikator Nasional
             </Button>
           </div>
